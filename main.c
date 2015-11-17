@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-//#include <omp.h>
+#include <omp.h>
 
 #define PRIME 1039
 #define X1 .5
@@ -25,10 +25,11 @@ int InCircle(double x, double y)
 int main(int argc, char *argv[])
 {
 	int p = 1;
-	int n = 0;
+	uint64_t n = 0;
 	int i;
-	uint64_t count = 0;
+	uint64_t inCirc = 0;
 	double x, y;
+	double tStart, tEnd;
 	struct drand48_data drandBuf;
 	if (argc != 3) {
 		printf("'Forrest's Pi Estimator' takes 2 args <n> <num threads>\n");
@@ -37,19 +38,31 @@ int main(int argc, char *argv[])
 
 	n = atoi(argv[1]);
 	p = atoi(argv[2]);
-	//omp_set_num_threads(p);
+	omp_set_num_threads(p);
 
-	srand48_r(PRIME*p, &drandBuf);
+	tStart = omp_get_wtime();
 
+#pragma omp parallel private(i, x, y, drandBuf) shared(n)
+{
+
+	srand48_r(PRIME*omp_get_thread_num(), &drandBuf);
+
+#pragma omp for reduction(+:inCirc)
 	for (i = 0; i < n; i++) {
 		drand48_r(&drandBuf, &x);
 		drand48_r(&drandBuf, &y);
-		if (InCircle(x,y)) count++;
+		if (InCircle(x,y)) inCirc++;
 	}
-
-	printf("Est. PI:\t %lf\n", 4.0*count/n);
+}
+	tEnd = omp_get_wtime();
+	double estimate = 4.0*inCirc/n;
+	printf("%d, %lu, %lf, %.25lf\n",p,n, tEnd-tStart, estimate);
+	/*
+	printf("Est. PI:\t %lf\n", 4.0*inCirc/n);
 	printf("PI:\t\t 3.141592653589793238462643383279\n");
-
+	printf("Time %lf\n", tEnd-tStart);
+*/
+	return 0;
 }
 
 
