@@ -4,63 +4,31 @@
 #include <stdlib.h>
 #include <math.h>
 #include <omp.h>
+#define INCIRC(x,y) (y-.5)*(y-.5) + (x-.5)*(x-.5)
 
-#define PRIME 472882027
-#define X1 .5
-#define Y1 .5
-#define R .5
-
-#define PI 3.141592653589793238462643383279
-
-int InCircle(double x, double y)
-{
-	double res = sqrt(((y-Y1)*(y-Y1)) + ((x-X1)*(x-X1)));
-	if (res <= R) return 1;
-	return 0;
-}
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	int p = 1;
-	uint64_t n = 0;
-	uint64_t i;
-	uint64_t inCirc = 0;
-	double x, y;
-	double tStart, tEnd;
+	uint64_t n = 0, inCirc = 0, i;
+	double x, y, tStart, tEnd;
 	struct drand48_data drandBuf;
-	if (argc != 3) {
-		printf("'Forrest's Pi Estimator' takes 2 args <n> <num threads>\n");
-		exit(1);
-	}
-
-	n = atoi(argv[1]);
+	if (argc != 3) { printf("2 args, <n> <numProcs>"); exit(1); }
+	n = atol(argv[1]);
 	p = atoi(argv[2]);
+
 	omp_set_num_threads(p);
-
 	tStart = omp_get_wtime();
-
 #pragma omp parallel private(i, x, y, drandBuf) shared(n)
 {
-
-	srand48_r(PRIME*omp_get_thread_num(), &drandBuf);
+	srand48_r(omp_get_thread_num(), &drandBuf);
 
 #pragma omp for reduction(+:inCirc)
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		drand48_r(&drandBuf, &x);
 		drand48_r(&drandBuf, &y);
-		if (InCircle(x,y)) inCirc++;
+		if (INCIRC(x,y) <= .25) inCirc++;
 	}
 }
 	tEnd = omp_get_wtime();
-	double estimate = 4.0*inCirc/n;
-	printf("Num Procs\t Itterations\t\t Runtime (sec)\t\t Estimate PI\n");
-	printf("%d\t\t %lu\t\t %lf\t\t %.25lf\n",p,n, tEnd-tStart, estimate);
-	/*
-	printf("Est. PI:\t %lf\n", 4.0*inCirc/n);
-	printf("PI:\t\t 3.141592653589793238462643383279\n");
-	printf("Time %lf\n", tEnd-tStart);
-*/
+	printf("Num Procs %d\nItterations %lu\nRuntime %lf\nEstimate PI %.25lf\n",p,n,tEnd-tStart,4.0*inCirc/n);
 	return 0;
 }
-
-

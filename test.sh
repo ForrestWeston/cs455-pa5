@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#mpiexec -machinefile ~/machinefile.txt -n 2 ~/Code/cs483-pa3/run 17 13 23 1 1000000
-#mpiexec -machinefile ~/machinefile.txt -n 4 ~/Code/cs483-pa3/run 17 13 23 1 1000000
-#mpiexec -machinefile ~/machinefile.txt -n 8 ~/Code/cs483-pa3/run 17 13 23 1 1000000
-#mpiexec -machinefile ~/machinefile.txt -n 16 ~/Code/cs483-pa3/run 17 13 23 1 1000000
-
 function run_thing() {
 	num=$1
 	procs=$2
