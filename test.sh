@@ -12,7 +12,7 @@ function run_thing() {
 }
 
 function run_trials() {
-	itt=7
+	itt=6
 	nproc=1
 	n=33554432
 	for i in `seq $itt`

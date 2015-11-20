@@ -1,14 +1,11 @@
-#include <stdio.h>
-#include <inttypes.h>
 #include <stdint.h>
-#include <string.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <math.h>
-#include <assert.h>
 #include <omp.h>
 
-#define PRIME 1039
+#define PRIME 472882027
 #define X1 .5
 #define Y1 .5
 #define R .5
@@ -26,7 +23,7 @@ int main(int argc, char *argv[])
 {
 	int p = 1;
 	uint64_t n = 0;
-	int i;
+	uint64_t i;
 	uint64_t inCirc = 0;
 	double x, y;
 	double tStart, tEnd;
@@ -56,7 +53,8 @@ int main(int argc, char *argv[])
 }
 	tEnd = omp_get_wtime();
 	double estimate = 4.0*inCirc/n;
-	printf("%d, %lu, %lf, %.25lf\n",p,n, tEnd-tStart, estimate);
+	printf("Num Procs\t Itterations\t\t Runtime (sec)\t\t Estimate PI\n");
+	printf("%d\t\t %lu\t\t %lf\t\t %.25lf\n",p,n, tEnd-tStart, estimate);
 	/*
 	printf("Est. PI:\t %lf\n", 4.0*inCirc/n);
 	printf("PI:\t\t 3.141592653589793238462643383279\n");
