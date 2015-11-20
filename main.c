@@ -2,13 +2,11 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <math.h>
 #include <omp.h>
 #define INCIRC(x,y) (y-.5)*(y-.5) + (x-.5)*(x-.5)
 
 int main(int argc, char *argv[]) {
-	int p = 1;
-	uint64_t n = 0, inCirc = 0, i;
+	uint64_t n = 0, inCirc = 0, p = 1, i;
 	double x, y, tStart, tEnd;
 	struct drand48_data drandBuf;
 	if (argc != 3) { printf("2 args, <n> <numProcs>"); exit(1); }
