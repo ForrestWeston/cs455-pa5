@@ -6,14 +6,12 @@
 #define INCIRC(x,y) (y-.5)*(y-.5) + (x-.5)*(x-.5)
 
 int main(int argc, char *argv[]) {
-	uint64_t n = 0, inCirc = 0, p = 1, i;
-	double x, y, tStart, tEnd;
+	uint64_t n = 0, inCirc = 0, i;
+	double x, y, tStart;
 	struct drand48_data drandBuf;
 	if (argc != 3) { printf("2 args, <n> <numProcs>"); exit(1); }
 	n = atol(argv[1]);
-	p = atoi(argv[2]);
-
-	omp_set_num_threads(p);
+	omp_set_num_threads(atoi(argv[2]));
 	tStart = omp_get_wtime();
 #pragma omp parallel private(i, x, y, drandBuf) shared(n)
 {
@@ -26,7 +24,6 @@ int main(int argc, char *argv[]) {
 		if (INCIRC(x,y) <= .25) inCirc++;
 	}
 }
-	tEnd = omp_get_wtime();
-	printf("Num Procs %d\nItterations %lu\nRuntime %lf\nEstimate PI %.25lf\n",p,n,tEnd-tStart,4.0*inCirc/n);
+	printf("Num Procs %d\nItterations %lu\nRuntime %lf\nEstimate PI %.25lf\n",atoi(argv[2]),n,omp_get_wtime()-tStart,4.0*inCirc/n);
 	return 0;
 }
